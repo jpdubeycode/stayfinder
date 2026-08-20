@@ -18,6 +18,7 @@ router.route("/")
       wrapAsync(listingController.createListing)
     );
    
+    router.get("/search", wrapAsync(listingController.searchListings));
     
 //New route
     router.get("/new", isLoggedIn, listingController.renderNewForm);
@@ -46,4 +47,6 @@ router.get("/:id/edit",
     wrapAsync(listingController.renderEditForm))
 
 module.exports = router;
+
+router.get("/filter/:category", wrapAsync(listingController.filterListings));
 

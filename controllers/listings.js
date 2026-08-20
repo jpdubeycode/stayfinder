@@ -87,3 +87,39 @@ module.exports.destroyListing = async (req, res) => {
     res.redirect("/listings");
 };
 
+module.exports.searchListings = async (req, res) => {
+    let { search } = req.query;
+
+    if (!search) {
+        return res.redirect("/listings");
+    }
+
+    const allListings = await Listing.find({
+        $or: [
+            { title: { $regex: search, $options: "i" } },
+            { location: { $regex: search, $options: "i" } },
+            { country: { $regex: search, $options: "i" } },
+        ],
+    });
+
+    if (allListings.length === 0) {
+        req.flash("error", "No listings found for your search!");
+        return res.redirect("/listings");
+    }
+
+    res.render("listings/index.ejs", { allListings });
+};
+
+
+module.exports.filterListings = async (req, res) => {
+    let { category } = req.params;
+
+    const allListings = await Listing.find({ category: category });
+
+    if (allListings.length === 0) {
+        req.flash("error", `No listings found for ${category}!`);
+        return res.redirect("/listings");
+    }
+
+    res.render("listings/index.ejs", { allListings });
+};
